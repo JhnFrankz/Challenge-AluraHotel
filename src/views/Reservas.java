@@ -1,26 +1,27 @@
 package views;
 
 import java.awt.EventQueue;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.SystemColor;
-import javax.swing.JLabel;
-import javax.swing.ImageIcon;
 import java.awt.Color;
-import javax.swing.JTextField;
+
 import com.toedter.calendar.JDateChooser;
+import controller.ReservasController;
+import model.Reserva;
+
 import java.awt.Font;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JPopupMenu;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 
 @SuppressWarnings("serial")
@@ -28,6 +29,10 @@ public class Reservas extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField txtValor;
+	private JDateChooser txtFechaE;
+	private JDateChooser txtFechaS;
+	private JComboBox txtFormaPago;
+	private ReservasController reservasController;
 
 	/**
 	 * Launch the application.
@@ -49,6 +54,8 @@ public class Reservas extends JFrame {
 	 * Create the frame.
 	 */
 	public Reservas() {
+		this.reservasController = new ReservasController();
+
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Reservas.class.getResource("/imagenes/calendario.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 910, 540);
@@ -67,21 +74,28 @@ public class Reservas extends JFrame {
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
-		JDateChooser txtFechaE = new JDateChooser();
+		txtFechaE = new JDateChooser();
+		txtFechaE.setDateFormatString("yyyy-MM-dd");
 		txtFechaE.setBounds(88, 166, 235, 33);
 		panel.add(txtFechaE);
-		
+
 		JLabel lblNewLabel_1 = new JLabel("Fecha de Check In");
 		lblNewLabel_1.setBounds(88, 142, 133, 14);
 		lblNewLabel_1.setFont(new Font("Arial", Font.PLAIN, 14));
 		panel.add(lblNewLabel_1);
-		
+
 		JLabel lblNewLabel_1_1 = new JLabel("Fecha de Check Out");
 		lblNewLabel_1_1.setBounds(88, 210, 133, 14);
 		lblNewLabel_1_1.setFont(new Font("Arial", Font.PLAIN, 14));
 		panel.add(lblNewLabel_1_1);
 		
-		JDateChooser txtFechaS = new JDateChooser();
+		txtFechaS = new JDateChooser();
+		txtFechaS.setDateFormatString("yyyy-MM-dd");
+		txtFechaS.addPropertyChangeListener(new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent evt) {
+				calcularValor(txtFechaE, txtFechaS);
+			}
+		});
 		txtFechaS.setBounds(88, 234, 235, 33);
 		txtFechaS.getCalendarButton().setBackground(Color.WHITE);
 		panel.add(txtFechaS);
@@ -97,7 +111,7 @@ public class Reservas extends JFrame {
 		lblNewLabel_1_1_1.setFont(new Font("Arial", Font.PLAIN, 14));
 		panel.add(lblNewLabel_1_1_1);
 		
-		JComboBox txtFormaPago = new JComboBox();
+		txtFormaPago = new JComboBox();
 		txtFormaPago.setBounds(88, 373, 235, 33);
 		txtFormaPago.setFont(new Font("Arial", Font.PLAIN, 14));
 		txtFormaPago.setModel(new DefaultComboBoxModel(new String[] {"Tarjeta de Crédito", "Tarjeta de Débito", "Dinero en efectivo"}));
@@ -117,9 +131,10 @@ public class Reservas extends JFrame {
 		JButton btnReservar = new JButton("Continuar");
 		btnReservar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				RegistroHuesped huesped = new RegistroHuesped();
+				guardar();
+				/*RegistroHuesped huesped = new RegistroHuesped();
 				huesped.setVisible(true);
-				dispose();
+				dispose();*/
 			}
 		});
 		btnReservar.setForeground(Color.WHITE);
@@ -146,6 +161,7 @@ public class Reservas extends JFrame {
 		lblNewLabel_2.setBounds(15, 6, 104, 107);
 		panel.add(lblNewLabel_2);
 	}
+
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -162,5 +178,47 @@ public class Reservas extends JFrame {
 				popup.show(e.getComponent(), e.getX(), e.getY());
 			}
 		});
+	}
+
+	private void guardar() {
+		if (txtFechaE.getDate() != null && txtFechaS.getDate() != null) {
+			//String fechaE = new SimpleDateFormat("yyyy-MM-dd").format(txtFechaE.getDate());
+			/*String fechaE = txtFechaE.getDate().toString();
+			System.out.println(fechaE);*/
+			String fechaE = ((JTextField) txtFechaE.getDateEditor().getUiComponent()).getText();
+			String fechaS = ((JTextField) txtFechaS.getDateEditor().getUiComponent()).getText();
+			Reserva reserva = new Reserva(Date.valueOf(fechaE), Date.valueOf(fechaS),
+					Integer.parseInt(txtValor.getText()), txtFormaPago.getSelectedItem().toString());
+			this.reservasController.guardar(reserva);
+			JOptionPane.showMessageDialog(this, "Registro guardado correctamente");
+			limpiar();
+		} else {
+			JOptionPane.showMessageDialog(this, "Debes llenar todos los campos");
+		}
+	}
+
+	private void limpiar() {
+		this.txtFechaE.setCalendar(null);
+		this.txtFechaS.setCalendar(null);
+		this.txtValor.setText("");
+		this.txtFormaPago.setSelectedIndex(0);
+	}
+
+	private void calcularValor(JDateChooser fechaE, JDateChooser fechaS) {
+		if (fechaE.getDate() != null && fechaS.getDate() != null) {
+			Calendar inicio = fechaE.getCalendar();
+			Calendar fin = fechaS.getCalendar();
+			int dias = -1;
+			int diaria = 100;
+			int valor;
+
+			while (inicio.before(fin) || inicio.equals(fin)) {
+				dias++;
+				inicio.add(Calendar.DATE, 1);
+			}
+
+			valor = diaria * dias;
+			txtValor.setText("" + valor);
+		}
 	}
 }

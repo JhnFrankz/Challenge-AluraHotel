@@ -14,18 +14,9 @@
     </content>
     <orderEntry type="jdk" jdkName="JavaSE-1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
-      <library name="jcalendar-1.4.jar">
-        <CLASSES>
-          <root url="file://C:/Users/Genesys/Downloads/jcalendar-1.4/lib/jcalendar-1.4.jar" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="library" name="jcalendar-1.4" level="project" />
-    <orderEntry type="library" name="mysql-connector-java-8.0.29" level="project" />
     <orderEntry type="library" name="c3p0-0.9.5.5" level="project" />
     <orderEntry type="library" name="mchange-commons-java-0.2.20" level="project" />
+    <orderEntry type="library" name="mysql-connector-java-8.0.29" level="project" />
+    <orderEntry type="library" name="jcalendar-1.4" level="project" />
   </component>
 </module>
