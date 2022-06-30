@@ -5,6 +5,7 @@ import factory.ConnectionFactory;
 import model.Huesped;
 
 import java.sql.Connection;
+import java.util.List;
 
 public class HuespedesController {
 
@@ -17,5 +18,9 @@ public class HuespedesController {
 
     public void guardar(Huesped huesped) {
         this.huespedDAO.guardar(huesped);
+    }
+
+    public List<Huesped> listar() {
+        return this.huespedDAO.listar();
     }
 }

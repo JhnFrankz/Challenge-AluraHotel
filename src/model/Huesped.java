@@ -22,6 +22,12 @@ public class Huesped {
         this.reservaId = reservaId;
     }
 
+    public Huesped(int id, String nombre, String apellido, Date fechaNacimiento,
+                   String nacionalidad, String telefono, int reservaId) {
+        this(nombre, apellido, fechaNacimiento, nacionalidad, telefono, reservaId);
+        this.id = id;
+    }
+
     public int getId() {
         return id;
     }

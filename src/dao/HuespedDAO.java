@@ -6,6 +6,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HuespedDAO {
 
@@ -23,12 +25,12 @@ public class HuespedDAO {
 
             try (PreparedStatement statement = connection.prepareStatement(query,
                     PreparedStatement.RETURN_GENERATED_KEYS)) {
-                System.out.println(huesped.getNombre());
+                /*System.out.println(huesped.getNombre());
                 System.out.println(huesped.getApellido());
                 System.out.println(huesped.getFechaNacimiento());
                 System.out.println(huesped.getNacionalidad());
                 System.out.println(huesped.getTelefono());
-                System.out.println(huesped.getReservaId());
+                System.out.println(huesped.getReservaId());*/
 
                 statement.setString(1, huesped.getNombre());
                 statement.setString(2, huesped.getApellido());
@@ -51,6 +53,35 @@ public class HuespedDAO {
         }
     }
 
+    public List<Huesped> listar() {
+        List<Huesped> huespedes = new ArrayList<>();
+
+        try {
+            String query = "SELECT * FROM huespedes";
+
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    while (resultSet.next()) {
+                        Huesped huesped = new Huesped(
+                                resultSet.getInt("id"),
+                                resultSet.getString("nombre"),
+                                resultSet.getString("apellido"),
+                                resultSet.getDate("fecha_nacimiento"),
+                                resultSet.getString("nacionalidad"),
+                                resultSet.getString("telefono"),
+                                resultSet.getInt("reserva_id")
+                        );
+                        huespedes.add(huesped);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return huespedes;
+    }
+
     public void eliminar(Huesped huesped) {
         // TODO
     }
@@ -60,7 +91,6 @@ public class HuespedDAO {
     }
 
     public Huesped buscar(int id) {
-        // TODO
         return null;
     }
 }

@@ -1,5 +1,8 @@
 package views;
 
+import controller.HuespedesController;
+import model.Huesped;
+
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -15,7 +18,9 @@ import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTabbedPane;
+import javax.swing.table.DefaultTableModel;
 import java.awt.Toolkit;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class Busqueda extends JFrame {
@@ -23,6 +28,8 @@ public class Busqueda extends JFrame {
 	private JPanel contentPane;
 	private JTextField txtBuscar;
 	private JTable tbHuespedes;
+	private DefaultTableModel modelo;
+	private HuespedesController huespedesController;
 
 	/**
 	 * Launch the application.
@@ -44,6 +51,8 @@ public class Busqueda extends JFrame {
 	 * Create the frame.
 	 */
 	public Busqueda() {
+		this.huespedesController = new HuespedesController();
+
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Busqueda.class.getResource("/imagenes/lupa2.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 910, 516);
@@ -88,6 +97,7 @@ public class Busqueda extends JFrame {
 				dispose();
 			}
 		});
+
 		btnSalir.setIcon(new ImageIcon(Busqueda.class.getResource("/imagenes/cerrar-sesion 32-px.png")));
 		btnSalir.setForeground(Color.WHITE);
 		btnSalir.setBackground(Color.WHITE);
@@ -99,6 +109,18 @@ public class Busqueda extends JFrame {
 		contentPane.add(panel);
 		
 		tbHuespedes = new JTable();
+
+		modelo = (DefaultTableModel) tbHuespedes.getModel();
+		modelo.addColumn("ID");
+		modelo.addColumn("Nombre");
+		modelo.addColumn("Apellido");
+		modelo.addColumn("Fecha de Nacimiento");
+		modelo.addColumn("Nacionalidad");
+		modelo.addColumn("Telefono");
+		modelo.addColumn("Id de Reserva");
+
+		listar();
+
 		tbHuespedes.setFont(new Font("Arial", Font.PLAIN, 14));
 		panel.addTab("Huéspedes", new ImageIcon(Busqueda.class.getResource("/imagenes/persona.png")), tbHuespedes, null);
 		
@@ -123,5 +145,21 @@ public class Busqueda extends JFrame {
 		lblNewLabel_2.setBounds(25, 10, 104, 107);
 		contentPane.add(lblNewLabel_2);
 		setResizable(false);
+	}
+
+	public void listar() {
+		List<Huesped> huespedes = this.huespedesController.listar();
+
+		huespedes.forEach(huesped -> modelo.addRow(new Object[]{
+				huesped.getId(),
+				huesped.getNombre(),
+				huesped.getApellido(),
+				huesped.getFechaNacimiento(),
+				huesped.getNacionalidad(),
+				huesped.getTelefono(),
+				huesped.getReservaId()
+		}));
+
+
 	}
 }
