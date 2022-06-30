@@ -1,7 +1,9 @@
 package views;
 
 import controller.HuespedesController;
+import controller.ReservasController;
 import model.Huesped;
+import model.Reserva;
 
 import java.awt.EventQueue;
 import javax.swing.JFrame;
@@ -28,8 +30,10 @@ public class Busqueda extends JFrame {
 	private JPanel contentPane;
 	private JTextField txtBuscar;
 	private JTable tbHuespedes;
-	private DefaultTableModel modelo;
+	private DefaultTableModel modeloHuespedes;
+	private DefaultTableModel modeloReservas;
 	private HuespedesController huespedesController;
+	private ReservasController reservasController;
 
 	/**
 	 * Launch the application.
@@ -52,6 +56,7 @@ public class Busqueda extends JFrame {
 	 */
 	public Busqueda() {
 		this.huespedesController = new HuespedesController();
+		this.reservasController = new ReservasController();
 
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Busqueda.class.getResource("/imagenes/lupa2.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -110,24 +115,32 @@ public class Busqueda extends JFrame {
 		
 		tbHuespedes = new JTable();
 
-		modelo = (DefaultTableModel) tbHuespedes.getModel();
-		modelo.addColumn("ID");
-		modelo.addColumn("Nombre");
-		modelo.addColumn("Apellido");
-		modelo.addColumn("Fecha de Nacimiento");
-		modelo.addColumn("Nacionalidad");
-		modelo.addColumn("Telefono");
-		modelo.addColumn("Id de Reserva");
-
-		listar();
+		modeloHuespedes = (DefaultTableModel) tbHuespedes.getModel();
+		modeloHuespedes.addColumn("ID");
+		modeloHuespedes.addColumn("Nombre");
+		modeloHuespedes.addColumn("Apellido");
+		modeloHuespedes.addColumn("Fecha de Nacimiento");
+		modeloHuespedes.addColumn("Nacionalidad");
+		modeloHuespedes.addColumn("Telefono");
+		modeloHuespedes.addColumn("Id de Reserva");
 
 		tbHuespedes.setFont(new Font("Arial", Font.PLAIN, 14));
 		panel.addTab("Huéspedes", new ImageIcon(Busqueda.class.getResource("/imagenes/persona.png")), tbHuespedes, null);
 		
 		JTable tbReservas = new JTable();
+
+		modeloReservas = (DefaultTableModel) tbReservas.getModel();
+		modeloReservas.addColumn("ID");
+		modeloReservas.addColumn("Fecha de Entrada");
+		modeloReservas.addColumn("Fecha de Salida");
+		modeloReservas.addColumn("Valor");
+		modeloReservas.addColumn("Forma de Pago");
+
 		tbReservas.setFont(new Font("Arial", Font.PLAIN, 14));
 		panel.addTab("Reservas", new ImageIcon(Busqueda.class.getResource("/imagenes/calendario.png")), tbReservas, null);
-		
+
+		listar();
+
 		JButton btnEliminar = new JButton("");
 		btnEliminar.setIcon(new ImageIcon(Busqueda.class.getResource("/imagenes/deletar.png")));
 		btnEliminar.setBackground(SystemColor.menu);
@@ -150,7 +163,7 @@ public class Busqueda extends JFrame {
 	public void listar() {
 		List<Huesped> huespedes = this.huespedesController.listar();
 
-		huespedes.forEach(huesped -> modelo.addRow(new Object[]{
+		huespedes.forEach(huesped -> modeloHuespedes.addRow(new Object[]{
 				huesped.getId(),
 				huesped.getNombre(),
 				huesped.getApellido(),
@@ -160,6 +173,14 @@ public class Busqueda extends JFrame {
 				huesped.getReservaId()
 		}));
 
+		List<Reserva> reservas = this.reservasController.listar();
 
+		reservas.forEach(reserva -> modeloReservas.addRow(new Object[]{
+				reserva.getId(),
+				reserva.getFechaEntrada(),
+				reserva.getFechaSalida(),
+				reserva.getValor(),
+				reserva.getFormaPago()
+		}));
 	}
 }

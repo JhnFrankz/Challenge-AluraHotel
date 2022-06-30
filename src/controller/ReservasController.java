@@ -5,6 +5,7 @@ import factory.ConnectionFactory;
 import model.Reserva;
 
 import java.sql.Connection;
+import java.util.List;
 
 public class ReservasController {
 
@@ -17,6 +18,10 @@ public class ReservasController {
 
     public int guardar(Reserva reserva) {
         return this.reservaDAO.guardar(reserva);
+    }
+
+    public List<Reserva> listar() {
+        return this.reservaDAO.listar();
     }
 
 }

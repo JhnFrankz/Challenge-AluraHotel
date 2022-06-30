@@ -1,8 +1,11 @@
 package dao;
 
+import model.Huesped;
 import model.Reserva;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReservaDAO {
     private Connection connection;
@@ -37,6 +40,33 @@ public class ReservaDAO {
         }
 
         return reserva.getId();
+    }
+
+    public List<Reserva> listar() {
+        List<Reserva> reservas = new ArrayList<>();
+
+        try {
+            String query = "SELECT * FROM reservas";
+
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    while (resultSet.next()) {
+                        Reserva reserva = new Reserva(
+                                resultSet.getInt("id"),
+                                resultSet.getDate("fecha_entrada"),
+                                resultSet.getDate("fecha_salida"),
+                                resultSet.getDouble("valor"),
+                                resultSet.getString("forma_pago")
+                        );
+                        reservas.add(reserva);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return reservas;
     }
 
     public void eliminar(Reserva reserva) {
