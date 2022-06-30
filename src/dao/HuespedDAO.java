@@ -23,6 +23,12 @@ public class HuespedDAO {
 
             try (PreparedStatement statement = connection.prepareStatement(query,
                     PreparedStatement.RETURN_GENERATED_KEYS)) {
+                System.out.println(huesped.getNombre());
+                System.out.println(huesped.getApellido());
+                System.out.println(huesped.getFechaNacimiento());
+                System.out.println(huesped.getNacionalidad());
+                System.out.println(huesped.getTelefono());
+                System.out.println(huesped.getReservaId());
 
                 statement.setString(1, huesped.getNombre());
                 statement.setString(2, huesped.getApellido());
@@ -32,7 +38,7 @@ public class HuespedDAO {
                 //Tiene que ser la reserva generada por el DAO de reserva
                 statement.setInt(6, huesped.getReservaId());
 
-                statement.executeQuery();
+                statement.execute();
 
                 try (ResultSet resultSet = statement.getGeneratedKeys()) {
                     while (resultSet.next()) {

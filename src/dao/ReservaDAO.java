@@ -11,7 +11,7 @@ public class ReservaDAO {
         this.connection = connection;
     }
 
-    public void guardar(Reserva reserva) {
+    public int guardar(Reserva reserva) {
         try {
             String query = "INSERT INTO reservas " +
                     "(fecha_entrada, fecha_salida, valor, forma_pago) " +
@@ -24,7 +24,7 @@ public class ReservaDAO {
                 statement.setDouble(3, reserva.getValor());
                 statement.setString(4, reserva.getFormaPago());
 
-                statement.executeUpdate();
+                statement.execute();
 
                 try (ResultSet resultSet = statement.getGeneratedKeys()) {
                     while (resultSet.next()) {
@@ -35,6 +35,8 @@ public class ReservaDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+        return reserva.getId();
     }
 
     public void eliminar(Reserva reserva) {

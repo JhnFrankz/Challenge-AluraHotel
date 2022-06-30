@@ -112,10 +112,13 @@ public class Reservas extends JFrame {
         JButton btnReservar = new JButton("Continuar");
         btnReservar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                guardar();
-				RegistroHuesped huesped = new RegistroHuesped();
-				huesped.setVisible(true);
-				dispose();
+                int idReserva = guardar();
+
+                if (idReserva != -1) {
+                    RegistroHuesped huesped = new RegistroHuesped(idReserva);
+                    huesped.setVisible(true);
+                    dispose();
+                }
             }
         });
 
@@ -180,7 +183,7 @@ public class Reservas extends JFrame {
         });
     }
 
-    private void guardar() {
+    private int guardar() {
         if (txtFechaE.getDate() != null && txtFechaS.getDate() != null) {
             //String fechaE = new SimpleDateFormat("yyyy-MM-dd").format(txtFechaE.getDate());
 			/*String fechaE = txtFechaE.getDate().toString();
@@ -189,11 +192,13 @@ public class Reservas extends JFrame {
             String fechaS = ((JTextField) txtFechaS.getDateEditor().getUiComponent()).getText();
             Reserva reserva = new Reserva(Date.valueOf(fechaE), Date.valueOf(fechaS),
                     Integer.parseInt(txtValor.getText()), txtFormaPago.getSelectedItem().toString());
-            this.reservasController.guardar(reserva);
+            int idReserva = this.reservasController.guardar(reserva);
             JOptionPane.showMessageDialog(this, "Registro guardado correctamente");
             limpiar();
+            return idReserva;
         } else {
             JOptionPane.showMessageDialog(this, "Debes llenar todos los campos");
+            return -1;
         }
     }
 
