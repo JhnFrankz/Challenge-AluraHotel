@@ -82,8 +82,19 @@ public class HuespedDAO {
         return huespedes;
     }
 
-    public void eliminar(Huesped huesped) {
-        // TODO
+    public int eliminar(int id) {
+        try {
+            String query = "DELETE FROM huespedes WHERE id = ?";
+
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, id);
+                statement.execute();
+
+                return statement.getUpdateCount();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void actualizar(Huesped huesped) {
@@ -92,5 +103,34 @@ public class HuespedDAO {
 
     public Huesped buscar(int id) {
         return null;
+    }
+
+    public int modificar(Huesped huesped) {
+        try {
+            String query = "UPDATE huespedes SET " +
+                    "nombre = ?, " +
+                    "apellido = ?, " +
+                    "fecha_nacimiento = ?, " +
+                    "nacionalidad = ?, " +
+                    "telefono = ?, " +
+                    "reserva_id = ? " +
+                    "WHERE id = ?";
+
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, huesped.getNombre());
+                statement.setString(2, huesped.getApellido());
+                statement.setDate(3, huesped.getFechaNacimiento());
+                statement.setString(4, huesped.getNacionalidad());
+                statement.setString(5, huesped.getTelefono());
+                statement.setInt(6, huesped.getReservaId());
+                statement.setInt(7, huesped.getId());
+
+                statement.execute();
+
+                return statement.getUpdateCount();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

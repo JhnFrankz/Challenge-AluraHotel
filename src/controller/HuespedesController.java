@@ -23,4 +23,12 @@ public class HuespedesController {
     public List<Huesped> listar() {
         return this.huespedDAO.listar();
     }
+
+    public int modificar(Huesped huesped) {
+        return this.huespedDAO.modificar(huesped);
+    }
+
+    public int eliminar(int id) {
+        return this.huespedDAO.eliminar(id);
+    }
 }
