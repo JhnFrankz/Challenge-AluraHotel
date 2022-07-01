@@ -25,12 +25,6 @@ public class HuespedDAO {
 
             try (PreparedStatement statement = connection.prepareStatement(query,
                     PreparedStatement.RETURN_GENERATED_KEYS)) {
-                /*System.out.println(huesped.getNombre());
-                System.out.println(huesped.getApellido());
-                System.out.println(huesped.getFechaNacimiento());
-                System.out.println(huesped.getNacionalidad());
-                System.out.println(huesped.getTelefono());
-                System.out.println(huesped.getReservaId());*/
 
                 statement.setString(1, huesped.getNombre());
                 statement.setString(2, huesped.getApellido());
@@ -95,10 +89,6 @@ public class HuespedDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void actualizar(Huesped huesped) {
-        // TODO
     }
 
     public Huesped buscar(int id) {

@@ -1,6 +1,5 @@
 package dao;
 
-import model.Huesped;
 import model.Reserva;
 
 import java.sql.*;
@@ -69,16 +68,49 @@ public class ReservaDAO {
         return reservas;
     }
 
-    public void eliminar(Reserva reserva) {
-        // TODO
-    }
+    public int eliminar(int idReserva) {
+        try {
+            String query = "DELETE FROM reservas WHERE id = ?";
 
-    public void actualizar(Reserva reserva) {
-        // TODO
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, idReserva);
+
+                statement.execute();
+
+                return statement.getUpdateCount();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Reserva buscar(int id) {
         // TODO
         return null;
+    }
+
+    public int modificar(Reserva reserva) {
+        try {
+            String query = "UPDATE reservas SET " +
+                    "fecha_entrada = ?, " +
+                    "fecha_salida = ?, " +
+                    "valor = ?, " +
+                    "forma_pago = ? " +
+                    "WHERE id = ?;";
+
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setDate(1, reserva.getFechaEntrada());
+                statement.setDate(2, reserva.getFechaSalida());
+                statement.setDouble(3, reserva.getValor());
+                statement.setString(4, reserva.getFormaPago());
+                statement.setInt(5, reserva.getId());
+
+                statement.execute();
+
+                return statement.getUpdateCount();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

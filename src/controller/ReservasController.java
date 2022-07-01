@@ -24,4 +24,11 @@ public class ReservasController {
         return this.reservaDAO.listar();
     }
 
+    public int modificar(Reserva reserva) {
+        return this.reservaDAO.modificar(reserva);
+    }
+
+    public int eliminar(int id) {
+        return this.reservaDAO.eliminar(id);
+    }
 }
