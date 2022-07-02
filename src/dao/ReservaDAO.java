@@ -84,9 +84,33 @@ public class ReservaDAO {
         }
     }
 
-    public Reserva buscar(int id) {
-        // TODO
-        return null;
+    public List<Reserva> buscar(int id) {
+        List<Reserva> reservas = new ArrayList<>();
+
+        try {
+            String query = "SELECT * FROM reservas WHERE id = ?";
+
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, id);
+
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    while (resultSet.next()) {
+                        Reserva reserva = new Reserva(
+                                resultSet.getInt("id"),
+                                resultSet.getDate("fecha_entrada"),
+                                resultSet.getDate("fecha_salida"),
+                                resultSet.getDouble("valor"),
+                                resultSet.getString("forma_pago")
+                        );
+                        reservas.add(reserva);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return reservas;
     }
 
     public int modificar(Reserva reserva) {

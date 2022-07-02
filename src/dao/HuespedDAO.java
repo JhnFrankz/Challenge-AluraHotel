@@ -11,7 +11,7 @@ import java.util.List;
 
 public class HuespedDAO {
 
-    private Connection connection;
+    private final Connection connection;
 
     public HuespedDAO(Connection connection) {
         this.connection = connection;
@@ -91,8 +91,34 @@ public class HuespedDAO {
         }
     }
 
-    public Huesped buscar(int id) {
-        return null;
+    public List<Huesped> buscar(String busquedaIngresada) {
+        List<Huesped> huespedes = new ArrayList<>();
+
+        try {
+            String query = "SELECT * FROM huespedes WHERE apellido LIKE ?";
+
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, "%" + busquedaIngresada + "%");
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    while (resultSet.next()) {
+                        Huesped huesped = new Huesped(
+                                resultSet.getInt("id"),
+                                resultSet.getString("nombre"),
+                                resultSet.getString("apellido"),
+                                resultSet.getDate("fecha_nacimiento"),
+                                resultSet.getString("nacionalidad"),
+                                resultSet.getString("telefono"),
+                                resultSet.getInt("reserva_id")
+                        );
+                        huespedes.add(huesped);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return huespedes;
     }
 
     public int modificar(Huesped huesped) {

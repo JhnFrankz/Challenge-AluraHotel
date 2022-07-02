@@ -58,7 +58,7 @@ public class Login extends JFrame {
 		txtUsuario.setBounds(409, 181, 234, 33);
 		contentPane.add(txtUsuario);
 		
-		JLabel lblNewLabel_1_1_1 = new JLabel("Usuário");
+		JLabel lblNewLabel_1_1_1 = new JLabel("Usuario");
 		lblNewLabel_1_1_1.setFont(new Font("Arial", Font.PLAIN, 14));
 		lblNewLabel_1_1_1.setBounds(409, 156, 57, 14);
 		contentPane.add(lblNewLabel_1_1_1);
@@ -99,6 +99,8 @@ public class Login extends JFrame {
 		lblNewLabel_1.setIcon(new ImageIcon(Login.class.getResource("/imagenes/Ha-100px.png")));
 		lblNewLabel_1.setBounds(470, 30, 103, 94);
 		contentPane.add(lblNewLabel_1);
+
+		setResizable(false);
 	}
 
 	/*public void accionesFormulario() {

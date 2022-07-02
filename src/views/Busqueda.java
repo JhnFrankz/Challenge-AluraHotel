@@ -52,6 +52,17 @@ public class Busqueda extends JFrame {
         JButton btnBuscar = new JButton("");
         btnBuscar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                String busquedaIngresada = txtBuscar.getText();
+
+                if (busquedaIngresada.trim().isEmpty()) {
+                    limpiarTablas();
+                    cargarTablaHuespedes();
+                    cargarTablaReservas();
+                } else if (tbHuespedes.isVisible()) {
+                    buscarTablaHuespedes(busquedaIngresada);
+                } else if (tbReservas.isVisible()) {
+                    buscarTablaReservas(busquedaIngresada);
+                }
             }
         });
         btnBuscar.setBackground(Color.WHITE);
@@ -159,6 +170,13 @@ public class Busqueda extends JFrame {
         btnCancelar.setBackground(SystemColor.menu);
         btnCancelar.setBounds(713, 416, 54, 41);
         contentPane.add(btnCancelar);
+        btnCancelar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                MenuPrincipal menu = new MenuPrincipal();
+                menu.setVisible(true);
+                dispose();
+            }
+        });
 
         JLabel lblNewLabel_2 = new JLabel("");
         lblNewLabel_2.setIcon(new ImageIcon(Busqueda.class.getResource("/imagenes/Ha-100px.png")));
@@ -286,4 +304,38 @@ public class Busqueda extends JFrame {
                 });
     }
 
+    private void buscarTablaHuespedes(String apellido) {
+        limpiarTablas();
+        List<Huesped> huespedes = this.huespedesController.buscar(apellido);
+
+        huespedes.forEach(huesped -> modeloHuespedes.addRow(new Object[]{
+                huesped.getId(),
+                huesped.getNombre(),
+                huesped.getApellido(),
+                huesped.getFechaNacimiento(),
+                huesped.getNacionalidad(),
+                huesped.getTelefono(),
+                huesped.getReservaId()
+        }));
+    }
+
+    private void buscarTablaReservas(String numeroReserva) {
+        limpiarTablas();
+        List<Reserva> reservas;
+
+        try {
+            reservas = this.reservasController.buscar(Integer.parseInt(numeroReserva));
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Solo se permiten numeros");
+            return;
+        }
+
+        reservas.forEach(reserva -> modeloReservas.addRow(new Object[]{
+                reserva.getId(),
+                reserva.getFechaEntrada(),
+                reserva.getFechaSalida(),
+                reserva.getValor(),
+                reserva.getFormaPago()
+        }));
+    }
 }
