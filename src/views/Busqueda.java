@@ -67,9 +67,18 @@ public class Busqueda extends JFrame {
 
         btnEditar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                modificar();
-                limpiarTabla();
-                listar();
+
+                if (tbHuespedes.isVisible() && tbHuespedes.getSelectedRow() != -1) {
+                    modificarHuesped();
+                } else if (tbReservas.isVisible() && tbReservas.getSelectedRow() != -1) {
+                    modificarReserva();
+                } else {
+                    JOptionPane.showMessageDialog(null, "No se ha seleccionado ninguna fila");
+                }
+
+                limpiarTablas();
+                cargarTablaHuespedes();
+                cargarTablaReservas();
             }
         });
 
@@ -108,7 +117,7 @@ public class Busqueda extends JFrame {
         modeloHuespedes.addColumn("Nacionalidad");
         modeloHuespedes.addColumn("Telefono");
         modeloHuespedes.addColumn("Id de Reserva");
-
+        cargarTablaHuespedes();
         tbHuespedes.setFont(new Font("Arial", Font.PLAIN, 14));
         panel.addTab("Huéspedes", new ImageIcon(Busqueda.class.getResource("/imagenes/persona.png")), tbHuespedes, null);
 
@@ -120,16 +129,24 @@ public class Busqueda extends JFrame {
         modeloReservas.addColumn("Fecha de Salida");
         modeloReservas.addColumn("Valor");
         modeloReservas.addColumn("Forma de Pago");
-
+        cargarTablaReservas();
         tbReservas.setFont(new Font("Arial", Font.PLAIN, 14));
         panel.addTab("Reservas", new ImageIcon(Busqueda.class.getResource("/imagenes/calendario.png")), tbReservas, null);
 
         JButton btnEliminar = new JButton("");
         btnEliminar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                eliminar();
-                limpiarTabla();
-                listar();
+                if (tbHuespedes.isVisible() && tbHuespedes.getSelectedRow() != -1) {
+                    eliminarHuesped();
+                } else if (tbReservas.isVisible() && tbReservas.getSelectedRow() != -1) {
+                    eliminarReserva();
+                } else {
+                    JOptionPane.showMessageDialog(null, "No se ha seleccionado ninguna fila");
+                }
+
+                limpiarTablas();
+                cargarTablaHuespedes();
+                cargarTablaReservas();
             }
         });
         btnEliminar.setIcon(new ImageIcon(Busqueda.class.getResource("/imagenes/deletar.png")));
@@ -148,9 +165,6 @@ public class Busqueda extends JFrame {
         lblNewLabel_2.setBounds(25, 10, 104, 107);
         contentPane.add(lblNewLabel_2);
         setResizable(false);
-
-
-        listar();
     }
 
     /**
@@ -169,149 +183,107 @@ public class Busqueda extends JFrame {
         });
     }
 
-    public void listar() {
-            List<Huesped> huespedes = this.huespedesController.listar();
+    private void cargarTablaHuespedes() {
+        List<Huesped> huespedes = this.huespedesController.listar();
 
-            huespedes.forEach(huesped -> modeloHuespedes.addRow(new Object[]{
-                    huesped.getId(),
-                    huesped.getNombre(),
-                    huesped.getApellido(),
-                    huesped.getFechaNacimiento(),
-                    huesped.getNacionalidad(),
-                    huesped.getTelefono(),
-                    huesped.getReservaId()
-            }));
-            List<Reserva> reservas = this.reservasController.listar();
-
-            reservas.forEach(reserva -> modeloReservas.addRow(new Object[]{
-                    reserva.getId(),
-                    reserva.getFechaEntrada(),
-                    reserva.getFechaSalida(),
-                    reserva.getValor(),
-                    reserva.getFormaPago()
-            }));
+        huespedes.forEach(huesped -> modeloHuespedes.addRow(new Object[]{
+                huesped.getId(),
+                huesped.getNombre(),
+                huesped.getApellido(),
+                huesped.getFechaNacimiento(),
+                huesped.getNacionalidad(),
+                huesped.getTelefono(),
+                huesped.getReservaId()
+        }));
     }
 
-    private void limpiarTabla() {
-        modeloHuespedes.getDataVector().clear();
-        modeloReservas.getDataVector().clear();
+    private void cargarTablaReservas() {
+        List<Reserva> reservas = this.reservasController.listar();
+
+        reservas.forEach(reserva -> modeloReservas.addRow(new Object[]{
+                reserva.getId(),
+                reserva.getFechaEntrada(),
+                reserva.getFechaSalida(),
+                reserva.getValor(),
+                reserva.getFormaPago()
+        }));
     }
 
-    private boolean huespedTieneFilaElegida() {
-        return tbHuespedes.getSelectedRow() != -1 && tbHuespedes.getSelectedRow() != 0;
-        //return tabla.getSelectedRowCount() == 0 || tabla.getSelectedColumnCount() == 0;
-        //return tbHuespedes.getSelectedRowCount() == 0 || tbHuespedes.getSelectedColumnCount() == 0;
+    private void limpiarTablas() {
+        modeloHuespedes.setRowCount(0);
+        modeloReservas.setRowCount(0);
     }
 
-    private boolean reservaTieneFilaElegida() {
-        return tbReservas.getSelectedRow() != -1 && tbReservas.getSelectedRow() != 0;
-        //return tabla.getSelectedRowCount() == 0 || tabla.getSelectedColumnCount() == 0;
-        //return tbReservas.getSelectedRowCount() == 0 || tbHuespedes.getSelectedColumnCount() == 0;
+    private void modificarHuesped() {
+        Optional.ofNullable(modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), tbHuespedes.getSelectedColumn()))
+                .ifPresent(fila -> {
+                    int id = Integer.parseInt(modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), 0).toString());
+                    String nombre = (String) modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), 1);
+                    String apellido = (String) modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), 2);
+                    String fechaNacimiento = modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), 3).toString();
+                    String nacionalidad = (String) modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), 4);
+                    String telefono = (String) modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), 5);
+                    int reservaId = Integer.parseInt(modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), 6).toString());
+
+                    Huesped huesped = new Huesped(id, nombre, apellido, Date.valueOf(fechaNacimiento),
+                            nacionalidad, telefono, reservaId);
+
+                    int filasModificadas;
+                    filasModificadas = this.huespedesController.modificar(huesped);
+
+                    JOptionPane.showMessageDialog(this, "Se modificaron " +
+                            filasModificadas + " filas");
+                });
     }
 
-    private void modificar() {
-        int panelActivo = panel.getSelectedIndex();
+    private void eliminarHuesped() {
+        Optional.ofNullable(modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), tbHuespedes.getSelectedColumn()))
+                .ifPresent(fila -> {
+                    //Se eliminar tomando como id el id de la reserva
+                    int id = Integer.parseInt(modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), 6).toString());
 
-        if (panelActivo == 0) {
-            if (huespedTieneFilaElegida()) {
-                Optional.ofNullable(modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), tbHuespedes.getSelectedColumn()))
-                        .ifPresent(fila -> {
-                            int id = Integer.parseInt(modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), 0).toString());
-                            String nombre = (String) modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), 1);
-                            String apellido = (String) modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), 2);
-                            String fechaNacimiento = modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), 3).toString();
-                            String nacionalidad = (String) modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), 4);
-                            String telefono = (String) modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), 5);
-                            int reservaId = Integer.parseInt(modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), 6).toString());
+                    System.out.println(id);
+                    int cantidadEliminada;
 
-                            Huesped huesped = new Huesped(id, nombre, apellido, Date.valueOf(fechaNacimiento),
-                                    nacionalidad, telefono, reservaId);
+                    cantidadEliminada = this.huespedesController.eliminar(id);
 
-                            int filasModificadas;
-
-                            filasModificadas = this.huespedesController.modificar(huesped);
-
-                            JOptionPane.showMessageDialog(this, "Se modificaron " +
-                                    filasModificadas + " filas");
-
-                            //return;
-                        });
-            } else {
-                JOptionPane.showMessageDialog(this, "Por favor, elije un item");
-                return;
-            }
-
-        } else if (panelActivo == 1) {
-            if (reservaTieneFilaElegida()) {
-                Optional.ofNullable(modeloReservas.getValueAt(tbReservas.getSelectedRow(), tbReservas.getSelectedColumn()))
-                        .ifPresent(fila -> {
-                            int id = Integer.parseInt(modeloReservas.getValueAt(tbReservas.getSelectedRow(), 0).toString());
-                            String fechaEntrada = modeloReservas.getValueAt(tbReservas.getSelectedRow(), 1).toString();
-                            String fechaSalida = modeloReservas.getValueAt(tbReservas.getSelectedRow(), 2).toString();
-                            int valor = Integer.parseInt(modeloReservas.getValueAt(tbReservas.getSelectedRow(), 3).toString());
-                            String formaPago = (String) modeloReservas.getValueAt(tbReservas.getSelectedRow(), 4);
-
-                            Reserva reserva = new Reserva(id, Date.valueOf(fechaEntrada), Date.valueOf(fechaSalida), valor, formaPago);
-
-                            int filasModificadas;
-
-                            filasModificadas = this.reservasController.modificar(reserva);
-
-                            JOptionPane.showMessageDialog(this, "Se modificaron " +
-                                    filasModificadas + " filas");
-                        });
-            } else {
-                JOptionPane.showMessageDialog(this, "Por favor, elije un item");
-                return;
-            }
-
-        }
+                    JOptionPane.showMessageDialog(this, "Se eliminaron " +
+                            cantidadEliminada + " filas");
+                });
     }
 
-    private void eliminar() {
-        int panelActivo = panel.getSelectedIndex();
-        System.out.println(panelActivo);
+    private void modificarReserva() {
+        Optional.ofNullable(modeloReservas.getValueAt(tbReservas.getSelectedRow(), tbReservas.getSelectedColumn()))
+                .ifPresent(fila -> {
+                    int id = Integer.parseInt(modeloReservas.getValueAt(tbReservas.getSelectedRow(), 0).toString());
+                    String fechaEntrada = modeloReservas.getValueAt(tbReservas.getSelectedRow(), 1).toString();
+                    String fechaSalida = modeloReservas.getValueAt(tbReservas.getSelectedRow(), 2).toString();
+                    int valor = Integer.parseInt(modeloReservas.getValueAt(tbReservas.getSelectedRow(), 3).toString());
+                    String formaPago = (String) modeloReservas.getValueAt(tbReservas.getSelectedRow(), 4);
 
-        System.out.println(huespedTieneFilaElegida());
-        System.out.println(reservaTieneFilaElegida());
+                    Reserva reserva = new Reserva(id, Date.valueOf(fechaEntrada), Date.valueOf(fechaSalida), valor, formaPago);
 
-        if (panelActivo == 0) {
-            if (huespedTieneFilaElegida()) {
-                Optional.ofNullable(modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), tbHuespedes.getSelectedColumn()))
-                        .ifPresent(fila -> {
-                            int id = Integer.parseInt(modeloHuespedes.getValueAt(tbHuespedes.getSelectedRow(), 0).toString());
+                    int filasModificadas;
 
-                            int cantidadEliminada;
+                    filasModificadas = this.reservasController.modificar(reserva);
 
-                            cantidadEliminada = this.huespedesController.eliminar(id);
+                    JOptionPane.showMessageDialog(this, "Se modificaron " +
+                            filasModificadas + " filas");
+                });
+    }
 
-                            JOptionPane.showMessageDialog(this, "Se eliminaron " +
-                                    cantidadEliminada + " filas");
-                        });
-            } else {
-                JOptionPane.showMessageDialog(this, "Por favor, elije un item");
-                return;
-            }
+    private void eliminarReserva() {
+        Optional.ofNullable(modeloReservas.getValueAt(tbReservas.getSelectedRow(), tbReservas.getSelectedColumn()))
+                .ifPresent(fila -> {
+                    int id = Integer.parseInt(modeloReservas.getValueAt(tbReservas.getSelectedRow(), 0).toString());
+                    System.out.println(id);
+                    int cantidadEliminada;
 
-        } else if (panelActivo == 1) {
-            if (reservaTieneFilaElegida()) {
-                Optional.ofNullable(modeloReservas.getValueAt(tbReservas.getSelectedRow(), tbReservas.getSelectedColumn()))
-                        .ifPresent(fila -> {
-                            int id = Integer.parseInt(modeloReservas.getValueAt(tbReservas.getSelectedRow(), 0).toString());
-                            System.out.println(id);
-                            int cantidadEliminada;
+                    cantidadEliminada = this.reservasController.eliminar(id);
 
-                            cantidadEliminada = this.reservasController.eliminar(id);
-
-                            JOptionPane.showMessageDialog(this, "Se eliminaron " +
-                                    cantidadEliminada + " filas");
-                        });
-            } else {
-                JOptionPane.showMessageDialog(this, "Por favor, elije un item");
-                return;
-            }
-
-        }
+                    JOptionPane.showMessageDialog(this, "Se eliminaron " +
+                            cantidadEliminada + " filas");
+                });
     }
 
 }

@@ -95,11 +95,12 @@ public class RegistroHuesped extends JFrame {
         JButton btnGuardar = new JButton("");
         btnGuardar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                boolean result = guardar();
-                if (result) {
-                    Exito exito = new Exito();
-                    exito.setVisible(true);
-                    dispose();
+                if (!txtNombre.getText().isEmpty() && !txtApellido.getText().isEmpty() && txtFechaN.getDate() != null
+                        && !txtNacionalidad.getSelectedItem().toString().isEmpty() && !txtTelefono.getText().isEmpty()
+                        && !txtNreserva.getText().isEmpty()) {
+                    guardar();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Faltan datos por llenar");
                 }
             }
         });
@@ -172,22 +173,14 @@ public class RegistroHuesped extends JFrame {
         });
     }
 
-    private boolean guardar() {
-        if (!txtNombre.getText().isEmpty() && !txtApellido.getText().isEmpty() && txtFechaN.getDate() != null
-                && txtNacionalidad.getSelectedIndex() != 0 && !txtTelefono.getText().isEmpty()
-                && !txtNreserva.getText().isEmpty()) {
-            String fechaN = ((JTextField) txtFechaN.getDateEditor().getUiComponent()).getText();
-            Huesped huesped = new Huesped(txtNombre.getText(), txtApellido.getText(), Date.valueOf(fechaN),
-                    txtNacionalidad.getSelectedItem().toString(), txtTelefono.getText(),
-                    Integer.parseInt(txtNreserva.getText()));
-            this.huespedesController.guardar(huesped);
-            JOptionPane.showMessageDialog(this, "Registro guardado correctamente");
-            limpiar();
-            return true;
-        } else {
-            JOptionPane.showMessageDialog(null, "Faltan datos por llenar");
-            return false;
-        }
+    private void guardar() {
+        String fechaN = ((JTextField) txtFechaN.getDateEditor().getUiComponent()).getText();
+        Huesped huesped = new Huesped(txtNombre.getText(), txtApellido.getText(), Date.valueOf(fechaN),
+                txtNacionalidad.getSelectedItem().toString(), txtTelefono.getText(),
+                Integer.parseInt(txtNreserva.getText()));
+        this.huespedesController.guardar(huesped);
+        JOptionPane.showMessageDialog(this, "Registro guardado correctamente");
+        limpiar();
     }
 
     private void limpiar() {

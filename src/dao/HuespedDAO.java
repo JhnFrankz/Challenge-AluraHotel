@@ -78,7 +78,7 @@ public class HuespedDAO {
 
     public int eliminar(int id) {
         try {
-            String query = "DELETE FROM huespedes WHERE id = ?";
+            String query = "DELETE FROM reservas WHERE id = ?";
 
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setInt(1, id);
